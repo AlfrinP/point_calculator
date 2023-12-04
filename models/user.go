@@ -8,17 +8,22 @@ import (
 
 type User struct {
 	gorm.Model
-	Email        string `gorm:"unique" json:"email"`
-	UserName     string `json:"userName"`
-	PasswordHash string `json:"passwordHash"`
-	AcountType   string `json:"accountType"`
+	Email        string        `gorm:"unique" json:"email"`
+	UserName     string        `json:"userName"`
+	PasswordHash string        `json:"passwordHash"`
+	Department   string        `json:"department"`
+	Batch        string        `json:"batch"`
+	FacultyID    uint          `json:"faculty_id" gorm:"index;default:null"`
+	Faculty      Faculty       `json:"faculty" gorm:"foreignKey:FacultyID"`
+	Certificates []Certificate `json:"certificates" gorm:"foreignKey:StudentID"`
 }
 
 type UserCreate struct {
-	Email       string `validate:"required" json:"email"`
-	UserName    string `validate:"required" json:"userName"`
-	Password    string `validate:"required" json:"password"`
-	AccountType string `validate:"required,oneof=personal organization" json:"accountType"`
+	Email      string `validate:"required" json:"email"`
+	UserName   string `validate:"required" json:"userName"`
+	Password   string `validate:"required" json:"password"`
+	Department string `json:"department"`
+	Batch      string `json:"batch"`
 }
 
 type UserSignIn struct {
@@ -50,6 +55,9 @@ func (bc *UserCreate) Convert() (*User, error) {
 
 	return &User{
 		Email:        bc.Email,
+		UserName:     bc.UserName,
 		PasswordHash: string(hashedPasswd),
+		Department:   bc.Department,
+		Batch:        bc.Batch,
 	}, nil
 }
