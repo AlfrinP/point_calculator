@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/models"
+	"github.com/AlfrinP/point_calculator/models"
 	"gorm.io/gorm"
 )
 

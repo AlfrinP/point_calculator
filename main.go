@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/config"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/routes"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/storage"
+	"github.com/AlfrinP/point_calculator/config"
+	"github.com/AlfrinP/point_calculator/routes"
+	"github.com/AlfrinP/point_calculator/storage"
 	"github.com/gofiber/fiber/v2"
 )
 

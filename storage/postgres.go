@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/config"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/models"
+	"github.com/AlfrinP/point_calculator/config"
+	"github.com/AlfrinP/point_calculator/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

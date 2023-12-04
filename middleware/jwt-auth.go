@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/config"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/repository"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/storage"
+	"github.com/AlfrinP/point_calculator/config"
+	"github.com/AlfrinP/point_calculator/repository"
+	"github.com/AlfrinP/point_calculator/storage"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )

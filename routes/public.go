@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/controllers"
+	"github.com/AlfrinP/point_calculator/controllers"
 	"github.com/gofiber/fiber/v2"
 )
 

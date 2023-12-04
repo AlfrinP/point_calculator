@@ -1,4 +1,4 @@
-module github.com/Levantate-Labs/sainterview-backend/auth-service
+module github.com/AlfrinP/point_calculator
 
 go 1.20
 
