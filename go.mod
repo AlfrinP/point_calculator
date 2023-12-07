@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 module github.com/Levantate-Labs/sainterview-backend/auth-service
+=======
+module github.com/AlfrinP/point_calculator
+>>>>>>> 52a2cfba8417f30f47f3a85feb3c92850e82f352
 
 go 1.20
 
