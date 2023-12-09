@@ -4,15 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-<<<<<<< HEAD
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/config"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/repository"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/storage"
-=======
 	"github.com/AlfrinP/point_calculator/config"
 	"github.com/AlfrinP/point_calculator/repository"
 	"github.com/AlfrinP/point_calculator/storage"
->>>>>>> 52a2cfba8417f30f47f3a85feb3c92850e82f352
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
@@ -50,13 +44,13 @@ func DeserializeUser(c *fiber.Ctx) error {
 
 	}
 
-	userRepo := repository.NewUserRepository(storage.GetDB())
-	user, err := userRepo.Get(fmt.Sprint(claims["sub"]))
+	studentRepo := repository.NewStudentRepository(storage.GetDB())
+	student, err := studentRepo.Get(fmt.Sprint(claims["sub"]))
 	if err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
 	}
 
-	c.Locals("user", user)
+	c.Locals("student", student)
 
 	return c.Next()
 }
