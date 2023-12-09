@@ -55,14 +55,14 @@ func SignIn(c *fiber.Ctx) error {
 	}
 
 	studentRepo := repository.NewStudentRepository(storage.GetDB())
-	user, err := studentRepo.Get(params.Username)
+	student, err := studentRepo.Get(params.Username)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(params.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(student.PasswordHash), []byte(params.Password))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": "Invalid Email or Password",
@@ -73,7 +73,7 @@ func SignIn(c *fiber.Ctx) error {
 	now := time.Now().UTC()
 	claims := tokenByte.Claims.(jwt.MapClaims)
 	config, _ := config.LoadConfig(".")
-	claims["sub"] = user.ID
+	claims["sub"] = student.Username
 	claims["exp"] = now.Add(config.JwtExpiresIn).Unix()
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()
