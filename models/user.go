@@ -6,10 +6,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Student struct {
 	gorm.Model
-	Email        string        `gorm:"unique" json:"email"`
-	UserName     string        `json:"userName"`
+	Username     string        `json:"username" gorm:"unique"`
 	PasswordHash string        `json:"passwordHash"`
 	Department   string        `json:"department"`
 	Batch        string        `json:"batch"`
@@ -18,20 +17,19 @@ type User struct {
 	Certificates []Certificate `json:"certificates" gorm:"foreignKey:StudentID"`
 }
 
-type UserCreate struct {
-	Email      string `validate:"required" json:"email"`
-	UserName   string `validate:"required" json:"userName"`
+type StudentCreate struct {
+	Username   string `validate:"required" json:"username"`
 	Password   string `validate:"required" json:"password"`
 	Department string `json:"department"`
 	Batch      string `json:"batch"`
 }
 
-type UserSignIn struct {
-	Email    string `validate:"required" json:"email"`
+type StudentSignIn struct {
+	Username string `validate:"required" json:"username"`
 	Password string `validate:"required" json:"password"`
 }
 
-func (bc *UserCreate) Validate() error {
+func (bc *StudentCreate) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(bc); err != nil {
 		return err
@@ -39,7 +37,7 @@ func (bc *UserCreate) Validate() error {
 	return nil
 }
 
-func (us *UserSignIn) Validate() error {
+func (us *StudentSignIn) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(us); err != nil {
 		return err
@@ -47,15 +45,14 @@ func (us *UserSignIn) Validate() error {
 	return nil
 }
 
-func (bc *UserCreate) Convert() (*User, error) {
+func (bc *StudentCreate) Convert() (*Student, error) {
 	hashedPasswd, err := bcrypt.GenerateFromPassword([]byte(bc.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return &User{}, err
+		return &Student{}, err
 	}
 
-	return &User{
-		Email:        bc.Email,
-		UserName:     bc.UserName,
+	return &Student{
+		Username:     bc.Username,
 		PasswordHash: string(hashedPasswd),
 		Department:   bc.Department,
 		Batch:        bc.Batch,

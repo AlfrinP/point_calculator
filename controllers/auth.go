@@ -3,24 +3,17 @@ package controllers
 import (
 	"time"
 
-<<<<<<< HEAD
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/config"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/models"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/repository"
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/storage"
-=======
 	"github.com/AlfrinP/point_calculator/config"
 	"github.com/AlfrinP/point_calculator/models"
 	"github.com/AlfrinP/point_calculator/repository"
 	"github.com/AlfrinP/point_calculator/storage"
->>>>>>> 52a2cfba8417f30f47f3a85feb3c92850e82f352
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(c *fiber.Ctx) error {
-	params := &models.UserCreate{}
+	params := &models.StudentCreate{}
 	if err := c.BodyParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
@@ -33,27 +26,27 @@ func SignUp(c *fiber.Ctx) error {
 		})
 	}
 
-	user, err := params.Convert()
+	student, err := params.Convert()
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
 	}
 
-	userRepo := repository.NewUserRepository(storage.GetDB())
-	if err := userRepo.Create(user); err != nil {
+	studentRepo := repository.NewStudentRepository(storage.GetDB())
+	if err := studentRepo.Create(student); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"user": user,
+		"user": student,
 	})
 }
 
 func SignIn(c *fiber.Ctx) error {
-	params := &models.UserSignIn{}
+	params := &models.StudentSignIn{}
 
 	if err := c.BodyParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -61,15 +54,15 @@ func SignIn(c *fiber.Ctx) error {
 		})
 	}
 
-	userRepo := repository.NewUserRepository(storage.GetDB())
-	user, err := userRepo.Get(params.Email)
+	studentRepo := repository.NewStudentRepository(storage.GetDB())
+	student, err := studentRepo.Get(params.Username)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(params.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(student.PasswordHash), []byte(params.Password))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": "Invalid Email or Password",
@@ -80,7 +73,7 @@ func SignIn(c *fiber.Ctx) error {
 	now := time.Now().UTC()
 	claims := tokenByte.Claims.(jwt.MapClaims)
 	config, _ := config.LoadConfig(".")
-	claims["sub"] = user.ID
+	claims["sub"] = student.Username
 	claims["exp"] = now.Add(config.JwtExpiresIn).Unix()
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()

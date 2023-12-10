@@ -4,44 +4,44 @@ import (
 	"errors"
 	"strings"
 
-<<<<<<< HEAD
-	"github.com/Levantate-Labs/sainterview-backend/auth-service/models"
-=======
 	"github.com/AlfrinP/point_calculator/models"
->>>>>>> 52a2cfba8417f30f47f3a85feb3c92850e82f352
 	"gorm.io/gorm"
 )
 
-type UserRepositry struct {
+type User interface{
+	Get(username string)
+}
+
+type StudentRepositry struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepositry {
-	return &UserRepositry{db}
+func NewStudentRepository(db *gorm.DB) *StudentRepositry {
+	return &StudentRepositry{db}
 }
 
-func (repo *UserRepositry) Create(u *models.User) error {
+func (repo *StudentRepositry) Create(u *models.Student) error {
 	if err := repo.db.Create(u).Error; err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique") {
-			return errors.New("email already exists")
+			return errors.New("username already exists")
 		}
 		return err
 	}
 	return nil
 }
 
-func (repo *UserRepositry) Get(email string) (models.User, error) {
-	var user models.User
-	if err := repo.db.Where("email = ?", email).First(&user).Error; err != nil {
-		return user, err
+func (repo *StudentRepositry) Get(username string) (models.Student, error) {
+	var student models.Student
+	if err := repo.db.Where("username = ?", username).First(&student).Error; err != nil {
+		return student, err
 	}
-	return user, nil
+	return student, nil
 }
 
-func (repo *UserRepositry) All() ([]models.User, error) {
-	var users []models.User
-	if err := repo.db.Find(&users).Error; err != nil {
-		return users, err
+func (repo *StudentRepositry) All() ([]models.Student, error) {
+	var students []models.Student
+	if err := repo.db.Find(&students).Error; err != nil {
+		return students, err
 	}
-	return users, nil
+	return students, nil
 }
