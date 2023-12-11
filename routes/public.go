@@ -8,6 +8,6 @@ import (
 func SetupPublicRoutes(app *fiber.App) {
 	api := app.Group("/api")
 	auth := api.Group("/auth")
-	auth.Post("/signup", controllers.SignUp)
-	auth.Post("/signin", controllers.SignIn)
+	auth.Post("/signup/:role", controllers.SignUp)
+	auth.Post("/signin/:role", controllers.SignIn)
 }

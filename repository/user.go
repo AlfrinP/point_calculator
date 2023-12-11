@@ -8,9 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type User interface{
-	Get(username string)
-}
+// type User interface{
+// 	Get(username string)
+// }
 
 type StudentRepositry struct {
 	db *gorm.DB

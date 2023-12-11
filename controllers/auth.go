@@ -7,42 +7,82 @@ import (
 	"github.com/AlfrinP/point_calculator/models"
 	"github.com/AlfrinP/point_calculator/repository"
 	"github.com/AlfrinP/point_calculator/storage"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/AlfrinP/point_calculator/util"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(c *fiber.Ctx) error {
-	params := &models.StudentCreate{}
-	if err := c.BodyParser(params); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"msg": err.Error(),
+
+	role := c.Params("role")
+
+	if role == "student" {
+		params := &models.StudentCreate{}
+		if err := c.BodyParser(params); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		if err := params.Validate(); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		student, err := params.Convert()
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		studentRepo := repository.NewStudentRepository(storage.GetDB())
+		if err := studentRepo.Create(student); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"user": student,
+		})
+	} else if role == "faculty" {
+		params := &models.FacultyCreate{}
+		if err := c.BodyParser(params); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		if err := params.Validate(); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		faculty, err := params.Convert()
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		facultyRepo := repository.NewFacultyRepository(storage.GetDB())
+		if err := facultyRepo.Create(faculty); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"user": faculty,
+		})
+	} else {
+		return c.JSON(fiber.Map{
+			"error": "ivalid role",
 		})
 	}
-
-	if err := params.Validate(); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"msg": err.Error(),
-		})
-	}
-
-	student, err := params.Convert()
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"msg": err.Error(),
-		})
-	}
-
-	studentRepo := repository.NewStudentRepository(storage.GetDB())
-	if err := studentRepo.Create(student); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"msg": err.Error(),
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"user": student,
-	})
 }
 
 func SignIn(c *fiber.Ctx) error {
@@ -69,17 +109,7 @@ func SignIn(c *fiber.Ctx) error {
 		})
 	}
 
-	tokenByte := jwt.New(jwt.SigningMethodHS256)
-	now := time.Now().UTC()
-	claims := tokenByte.Claims.(jwt.MapClaims)
-	config, _ := config.LoadConfig(".")
-	claims["sub"] = student.Username
-	claims["exp"] = now.Add(config.JwtExpiresIn).Unix()
-	claims["iat"] = now.Unix()
-	claims["nbf"] = now.Unix()
-
-	tokenString, err := tokenByte.SignedString([]byte(config.JwtSecret))
-
+	tokenString, err := util.GenerateToken(id, role)
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"msg": "Generating JWT Token failed",
