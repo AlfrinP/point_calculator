@@ -23,19 +23,27 @@ func NewStudentRepository(db *gorm.DB) *StudentRepositry {
 func (repo *StudentRepositry) Create(u *models.Student) error {
 	if err := repo.db.Create(u).Error; err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique") {
-			return errors.New("username already exists")
+			return errors.New("email already exists")
 		}
 		return err
 	}
 	return nil
 }
 
-func (repo *StudentRepositry) Get(username string) (models.Student, error) {
+func (repo *StudentRepositry) Get(email string) (*models.Student, error) {
 	var student models.Student
-	if err := repo.db.Where("username = ?", username).First(&student).Error; err != nil {
-		return student, err
+	if err := repo.db.Where("email = ?", email).First(&student).Error; err != nil {
+		return &student, err
 	}
-	return student, nil
+	return &student, nil
+}
+
+func (repo *StudentRepositry) GetByID(id string) (*models.Student, error) {
+	var student models.Student
+	if err := repo.db.Where("id = ?", id).First(&student).Error; err != nil {
+		return &student, err
+	}
+	return &student, nil
 }
 
 func (repo *StudentRepositry) All() ([]models.Student, error) {

@@ -8,8 +8,8 @@ import (
 
 type Student struct {
 	gorm.Model
-	Username     string        `json:"username" gorm:"unique"`
-	PasswordHash string        `json:"passwordHash"`
+	Email        string        `json:"email" gorm:"unique"`
+	PasswordHash string        `json:"-"`
 	Department   string        `json:"department"`
 	Batch        string        `json:"batch"`
 	FacultyID    uint          `json:"faculty_id" gorm:"index;default:null"`
@@ -18,14 +18,14 @@ type Student struct {
 }
 
 type StudentCreate struct {
-	Username   string `validate:"required" json:"username"`
+	Email      string `validate:"required" json:"email"`
 	Password   string `validate:"required" json:"password"`
 	Department string `json:"department"`
 	Batch      string `json:"batch"`
 }
 
-type StudentSignIn struct {
-	Username string `validate:"required" json:"username"`
+type UserSignIn struct {
+	Email    string `validate:"required" json:"email"`
 	Password string `validate:"required" json:"password"`
 }
 
@@ -37,7 +37,7 @@ func (bc *StudentCreate) Validate() error {
 	return nil
 }
 
-func (us *StudentSignIn) Validate() error {
+func (us *UserSignIn) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(us); err != nil {
 		return err
@@ -52,7 +52,7 @@ func (bc *StudentCreate) Convert() (*Student, error) {
 	}
 
 	return &Student{
-		Username:     bc.Username,
+		Email:        bc.Email,
 		PasswordHash: string(hashedPasswd),
 		Department:   bc.Department,
 		Batch:        bc.Batch,

@@ -8,11 +8,12 @@ import (
 
 type Faculty struct {
 	gorm.Model
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	Department string `json:"department"`
-	Batch      string `json:"batch"`
-	Password   string `json:"password"`
+	Name       string    `json:"name"`
+	Email      string    `json:"email"`
+	Department string    `json:"department"`
+	Batch      string    `json:"batch"`
+	Password   string    `json:"-"`
+	Students   []Student `json:"students" gorm:"foreignKey:FacultyID"`
 }
 
 type FacultyCreate struct {
@@ -23,22 +24,9 @@ type FacultyCreate struct {
 	Password   string `validate:"required" json:"password"`
 }
 
-type FacultySignIn struct {
-	Email    string `validate:"required,email" json:"email"`
-	Password string `validate:"required" json:"password"`
-}
-
 func (fc *FacultyCreate) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(fc); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (fs *FacultySignIn) Validate() error {
-	validate := validator.New()
-	if err := validate.Struct(fs); err != nil {
 		return err
 	}
 	return nil

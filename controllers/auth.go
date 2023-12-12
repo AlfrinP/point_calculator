@@ -9,7 +9,6 @@ import (
 	"github.com/AlfrinP/point_calculator/storage"
 	"github.com/AlfrinP/point_calculator/util"
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(c *fiber.Ctx) error {
@@ -86,7 +85,9 @@ func SignUp(c *fiber.Ctx) error {
 }
 
 func SignIn(c *fiber.Ctx) error {
-	params := &models.StudentSignIn{}
+	params := &models.UserSignIn{}
+	var id uint
+	role := c.Params("role")
 
 	if err := c.BodyParser(params); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -94,28 +95,47 @@ func SignIn(c *fiber.Ctx) error {
 		})
 	}
 
-	studentRepo := repository.NewStudentRepository(storage.GetDB())
-	student, err := studentRepo.Get(params.Username)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"msg": err.Error(),
+	if role == "student" {
+		studentRepo := repository.NewStudentRepository(storage.GetDB())
+		student, err := studentRepo.Get(params.Email)
+		id = student.ID
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+		if err := util.VerifyPassword(student.PasswordHash, params.Password); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": "Invalid Email or Password",
+			})
+		}
+	} else if role == "faculty" {
+		facultyRepo := repository.NewFacultyRepository(storage.GetDB())
+		faculty, err := facultyRepo.Get(params.Email)
+		id = faculty.ID
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": err.Error(),
+			})
+		}
+		if err := util.VerifyPassword(faculty.Password, params.Password); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"msg": "Invalid Email or Password",
+			})
+		}
+	} else {
+		return c.JSON(fiber.Map{
+			"error": "ivalid role",
 		})
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(student.PasswordHash), []byte(params.Password))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"msg": "Invalid Email or Password",
-		})
-	}
-
-	tokenString, err := util.GenerateToken(id, role)
+	config, _ := config.LoadConfig(".")
+	tokenString, err := util.GenerateToken(id, role, config)
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"msg": "Generating JWT Token failed",
 		})
 	}
-
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokenString,
