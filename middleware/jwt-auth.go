@@ -44,13 +44,27 @@ func DeserializeUser(c *fiber.Ctx) error {
 
 	}
 
-	studentRepo := repository.NewStudentRepository(storage.GetDB())
-	student, err := studentRepo.Get(fmt.Sprint(claims["sub"]))
-	if err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
-	}
+	if claims["role"] == "student" {
+		studentRepo := repository.NewStudentRepository(storage.GetDB())
+		student, err := studentRepo.GetByID(fmt.Sprint(claims["user_id"]))
+		if err != nil {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
+		}
+		c.Locals("student", student)
 
-	c.Locals("student", student)
+	} else if claims["role"] == "faculty" {
+
+		facultyRepo := repository.NewFacultyRepository(storage.GetDB())
+		faculty, err := facultyRepo.GetByID(fmt.Sprint(claims["user_id"]))
+
+		if err != nil {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
+		}
+
+		c.Locals("faculty", faculty)
+	} else {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "invalid token claim"})
+	}
 
 	return c.Next()
 }

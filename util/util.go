@@ -5,13 +5,13 @@ import (
 
 	"github.com/AlfrinP/point_calculator/config"
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func GenerateToken(id uint, role string) (string, error) {
+func GenerateToken(id uint, role string, config config.Config) (string, error) {
 	tokenByte := jwt.New(jwt.SigningMethodHS256)
 	now := time.Now().UTC()
 	claims := tokenByte.Claims.(jwt.MapClaims)
-	config, _ := config.LoadConfig(".")
 	claims["user_id"] = id
 	claims["role"] = role
 	claims["exp"] = now.Add(config.JwtExpiresIn).Unix()
@@ -20,4 +20,8 @@ func GenerateToken(id uint, role string) (string, error) {
 
 	return tokenByte.SignedString([]byte(config.JwtSecret))
 
+}
+
+func VerifyPassword(hashedPassword string, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
