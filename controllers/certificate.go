@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"log"
+	"time"
+
 	"github.com/AlfrinP/point_calculator/models"
 	"github.com/AlfrinP/point_calculator/repository"
 	"github.com/AlfrinP/point_calculator/storage"
-	"log"
 	"github.com/AlfrinP/point_calculator/util"
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,18 +28,23 @@ func PostCertificate(c *fiber.Ctx) error {
 			})
 		}
 
-		file,err:=c.FormFile("upload_certificate")
-		if err!= nil {
-            return err
-        }
+		file, err := c.FormFile("upload_certificate")
+		if err != nil {
+			return err
+		}
 		log.Println(file.Filename)
-		c.SaveFile(file,"certificates/"+file.Filename)
+		c.SaveFile(file, "certificates/"+file.Filename)
 
+		date, err := time.Parse("2006-01-02", params.Date)
+		if err != nil {
+			return err
+		}
 		certificate := &models.Certificate{
 			StudentID: id,
 			Name:      params.Name,
 			Category:  params.Category,
 			Level:     params.Level,
+			Date:      date,
 		}
 
 		certificateRepo := repository.NewCertificateRepository(storage.GetDB())
@@ -55,5 +62,5 @@ func PostCertificate(c *fiber.Ctx) error {
 			"error": "invalid role",
 		})
 	}
-	
+
 }

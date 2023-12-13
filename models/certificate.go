@@ -18,9 +18,10 @@ type Certificate struct {
 }
 
 type CertificateCreate struct {
+	Name     string `validate:"required" json:"name"`
 	Category string `validate:"required" json:"category"`
 	Level    string `validate:"required" json:"level"`
-	Name     string `validate:"required" json:"name"`
+	Date     string `json:"date"`
 }
 
 func (cc *CertificateCreate) Validate() error {
