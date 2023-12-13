@@ -8,5 +8,10 @@ import (
 
 func SetupProtectedRoutes(app *fiber.App) {
 	api := app.Group("/api")
-	api.Get("/securitycheck", middleware.DeserializeUser, controllers.SecurityCheck)
+	api.Use(middleware.DeserializeUser)
+	api.Get("/securitycheck", controllers.SecurityCheck)
+	api.Get("/dashboard/:role", controllers.Dashboard)
+	api.Post("/update", controllers.UpdateFacultyID)
+	api.Post("/upload", controllers.PostCertificate)
+	api.Post("/comment", controllers.PostCertificate)
 }

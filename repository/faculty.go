@@ -38,7 +38,8 @@ func (repo *FacultyRepositry) Get(email string) (*models.Faculty, error) {
 	return &faculty, nil
 }
 
-func (repo *FacultyRepositry) GetByID(id string) (*models.Faculty, error) {
+
+func (repo *FacultyRepositry) GetByID(id uint) (*models.Faculty, error) {
 	var faculty models.Faculty
 	if err := repo.db.Where("id = ?", id).First(&faculty).Error; err != nil {
 		return &faculty, err

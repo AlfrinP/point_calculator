@@ -38,7 +38,13 @@ func (repo *StudentRepositry) Get(email string) (*models.Student, error) {
 	return &student, nil
 }
 
-func (repo *StudentRepositry) GetByID(id string) (*models.Student, error) {
+// db.Model(&User{}).Where("active = ?", true).Update("name", "hello")
+
+func (repo *StudentRepositry) UpdateFacultyID(id uint, facultyID uint) {
+	repo.db.Model(&models.Student{}).Where("id = ?", id).Update("faculty_id", facultyID)
+}
+
+func (repo *StudentRepositry) GetByID(id uint) (*models.Student, error) {
 	var student models.Student
 	if err := repo.db.Where("id = ?", id).First(&student).Error; err != nil {
 		return &student, err

@@ -37,11 +37,7 @@ type Comment struct {
 	CertificateID uint   `json:"-"`
 }
 
-type CommentCreate struct {
-	Message string `validate:"required" json:"message"`
-}
-
-func (cm *CommentCreate) Validate() error {
+func (cm *Comment) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(cm); err != nil {
 		return err

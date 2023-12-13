@@ -22,6 +22,7 @@ type StudentCreate struct {
 	Password   string `validate:"required" json:"password"`
 	Department string `json:"department"`
 	Batch      string `json:"batch"`
+	FacultyID  uint   `json:"faculty_id"`
 }
 
 type UserSignIn struct {
@@ -56,5 +57,6 @@ func (bc *StudentCreate) Convert() (*Student, error) {
 		PasswordHash: string(hashedPasswd),
 		Department:   bc.Department,
 		Batch:        bc.Batch,
+		FacultyID:    bc.FacultyID,
 	}, nil
 }

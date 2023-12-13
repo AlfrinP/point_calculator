@@ -2,11 +2,13 @@ package middleware
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/AlfrinP/point_calculator/config"
 	"github.com/AlfrinP/point_calculator/repository"
 	"github.com/AlfrinP/point_calculator/storage"
+	"github.com/AlfrinP/point_calculator/util"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
@@ -44,18 +46,26 @@ func DeserializeUser(c *fiber.Ctx) error {
 
 	}
 
-	if claims["role"] == "student" {
+	role := claims["role"].(string)
+	id, ok := claims["user_id"].(float64)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "invalid token claim 11"})
+	}
+	log.Println(role, id)
+	util.SetRoleAndID(role, uint(id))
+
+	if role == "student" {
 		studentRepo := repository.NewStudentRepository(storage.GetDB())
-		student, err := studentRepo.GetByID(fmt.Sprint(claims["user_id"]))
+		student, err := studentRepo.GetByID(uint(id))
 		if err != nil {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
 		}
 		c.Locals("student", student)
 
-	} else if claims["role"] == "faculty" {
+	} else if role == "faculty" {
 
 		facultyRepo := repository.NewFacultyRepository(storage.GetDB())
-		faculty, err := facultyRepo.GetByID(fmt.Sprint(claims["user_id"]))
+		faculty, err := facultyRepo.GetByID(uint(id))
 
 		if err != nil {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
