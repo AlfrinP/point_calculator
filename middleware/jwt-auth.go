@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/AlfrinP/point_calculator/config"
@@ -51,7 +50,6 @@ func DeserializeUser(c *fiber.Ctx) error {
 	if !ok {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "invalid token claim 11"})
 	}
-	log.Println(role, id)
 	util.SetRoleAndID(role, uint(id))
 
 	if role == "student" {

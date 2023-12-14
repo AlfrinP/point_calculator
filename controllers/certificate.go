@@ -64,3 +64,12 @@ func PostCertificate(c *fiber.Ctx) error {
 	}
 
 }
+
+func GetAllCertificate(c *fiber.Ctx) error {
+	certificateRepo := repository.NewCertificateRepository(storage.GetDB())
+	certificate, err := certificateRepo.GetAll()
+	if err != nil {
+		return err
+	}
+	return c.JSON(certificate)
+}

@@ -52,7 +52,7 @@ func UpdateFacultyID(c *fiber.Ctx) error {
 
 	role, id := util.GetRoleAndID()
 	log.Println(params)
-	
+
 	if role == "faculty" {
 		studentRepo := repository.NewStudentRepository(storage.GetDB())
 		studentRepo.UpdateFacultyID(params.StudentID, id)
