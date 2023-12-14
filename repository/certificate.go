@@ -35,3 +35,11 @@ func (repo *CertificateRepository) All() ([]models.Certificate, error) {
 	}
 	return certificates, nil
 }
+
+
+
+func (repo *CertificateRepository) GetAll() ([]models.Certificate, error) {
+	var certificate []models.Certificate
+	err := repo.db.Model(&models.Certificate{}).Preload("Comment").Find(&certificate).Error
+	return certificate, err
+}

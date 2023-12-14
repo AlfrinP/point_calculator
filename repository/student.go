@@ -44,13 +44,13 @@ func (repo *StudentRepositry) UpdateFacultyID(id uint, facultyID uint) {
 	repo.db.Model(&models.Student{}).Where("id = ?", id).Update("faculty_id", facultyID)
 }
 
-func (repo *StudentRepositry) GetByID(id uint) (*models.Student, error) {
-	var student models.Student
-	if err := repo.db.Where("id = ?", id).First(&student).Error; err != nil {
-		return &student, err
-	}
-	return &student, nil
-}
+// func (repo *StudentRepositry) GetByID(id uint) (*models.Student, error) {
+// 	var student models.Student
+// 	if err := repo.db.Where("id = ?", id).First(&student).Error; err != nil {
+// 		return &student, err
+// 	}
+// 	return &student, nil
+// }
 
 func (repo *StudentRepositry) All() ([]models.Student, error) {
 	var students []models.Student
@@ -58,4 +58,10 @@ func (repo *StudentRepositry) All() ([]models.Student, error) {
 		return students, err
 	}
 	return students, nil
+}
+
+func (repo *StudentRepositry) GetByID(id uint) ([]models.Student, error) {
+	var student []models.Student
+	err := repo.db.Model(&models.Certificate{}).Preload("Certificate").Where("id = ?", id).Find(&student).Error
+	return student, err
 }

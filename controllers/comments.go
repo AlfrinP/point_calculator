@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/AlfrinP/point_calculator/models"
 	"github.com/AlfrinP/point_calculator/repository"
 	"github.com/AlfrinP/point_calculator/storage"
-	"log"
 	"github.com/AlfrinP/point_calculator/util"
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,13 +15,13 @@ func PostComment(c *fiber.Ctx) error {
 	role, _ := util.GetRoleAndID()
 	log.Println(role)
 	if role == "faculty" {
-		params := &models.Comment{}
+		params := &models.CommentCreate{}
 		if err := c.BodyParser(params); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"msg": err.Error(),
 			})
 		}
-
+		log.Println(params.CertificateID)
 		if err := params.Validate(); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"msg": err.Error(),
@@ -28,9 +29,19 @@ func PostComment(c *fiber.Ctx) error {
 		}
 		log.Println(params)
 
+		// certificateID, err := strconv.Atoi(params.CertificateID)
+		// if err != nil {
+		// 	return err
+		// }
+
+		comment := &models.Comment{
+			Message:       params.Message,
+			CertificateID: uint(params.CertificateID),
+		}
+
 		commentRepo := repository.NewCommentRepository(storage.GetDB())
 
-		if err := commentRepo.Create(params); err != nil {
+		if err := commentRepo.Create(comment); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"msg": err.Error(),
 			})
@@ -43,5 +54,5 @@ func PostComment(c *fiber.Ctx) error {
 			"error": "invalid role",
 		})
 	}
-	
+
 }

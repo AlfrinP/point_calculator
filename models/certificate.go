@@ -13,14 +13,15 @@ type Certificate struct {
 	Level     string    `json:"level"`
 	Name      string    `json:"name"`
 	Date      time.Time `json:"date"`
-	Comment   Comment   `json:"comment" gorm:"foreignKey:CertificateID"`
+	Comment   []Comment `json:"comment"`
 	StudentID uint      `json:"student_id" gorm:"index"`
 }
 
 type CertificateCreate struct {
+	Name     string `validate:"required" json:"name"`
 	Category string `validate:"required" json:"category"`
 	Level    string `validate:"required" json:"level"`
-	Name     string `validate:"required" json:"name"`
+	Date     string `validate:"required" json:"date"`
 }
 
 func (cc *CertificateCreate) Validate() error {
@@ -34,10 +35,15 @@ func (cc *CertificateCreate) Validate() error {
 type Comment struct {
 	gorm.Model
 	Message       string `json:"message"`
-	CertificateID uint   `json:"-"`
+	CertificateID uint   `json:"certificate_id"`
 }
 
-func (cm *Comment) Validate() error {
+type CommentCreate struct {
+	Message       string `validate:"required" json:"message"`
+	CertificateID uint   `json:"certificate_id"`
+}
+
+func (cm *CommentCreate) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(cm); err != nil {
 		return err

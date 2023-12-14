@@ -13,5 +13,6 @@ func SetupProtectedRoutes(app *fiber.App) {
 	api.Get("/dashboard/:role", controllers.Dashboard)
 	api.Post("/update", controllers.UpdateFacultyID)
 	api.Post("/upload", controllers.PostCertificate)
-	api.Post("/comment", controllers.PostCertificate)
+	api.Get("/certificate", controllers.GetAllCertificate)
+	api.Post("/comment", controllers.PostComment)
 }
