@@ -13,7 +13,6 @@ type Student struct {
 	Department   string        `json:"department"`
 	Batch        string        `json:"batch"`
 	FacultyID    uint          `json:"faculty_id" gorm:"index;default:null"`
-	Faculty      Faculty       `json:"faculty" gorm:"foreignKey:FacultyID"`
 	Certificates []Certificate `json:"certificates" gorm:"foreignKey:StudentID"`
 }
 

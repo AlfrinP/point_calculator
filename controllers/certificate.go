@@ -54,7 +54,7 @@ func PostCertificate(c *fiber.Ctx) error {
 				"msg": err.Error(),
 			})
 		}
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 			"message": "Certificate successfully uploaded",
 		})
 	} else {
