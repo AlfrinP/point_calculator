@@ -38,7 +38,6 @@ func (repo *FacultyRepositry) Get(email string) (*models.Faculty, error) {
 	return &faculty, nil
 }
 
-
 func (repo *FacultyRepositry) GetByID(id uint) (*models.Faculty, error) {
 	var faculty models.Faculty
 	if err := repo.db.Where("id = ?", id).First(&faculty).Error; err != nil {
@@ -53,4 +52,13 @@ func (repo *FacultyRepositry) All() ([]models.Faculty, error) {
 		return faculty, err
 	}
 	return faculty, nil
+}
+
+func (repo *FacultyRepositry) GetAll(id uint) (*models.Faculty, error) {
+	var faculty models.Faculty
+	if err := repo.db.Preload("Students").First(&faculty, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &faculty, nil
 }

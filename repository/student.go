@@ -44,13 +44,13 @@ func (repo *StudentRepositry) UpdateFacultyID(id uint, facultyID uint) {
 	repo.db.Model(&models.Student{}).Where("id = ?", id).Update("faculty_id", facultyID)
 }
 
-// func (repo *StudentRepositry) GetByID(id uint) (*models.Student, error) {
-// 	var student models.Student
-// 	if err := repo.db.Where("id = ?", id).First(&student).Error; err != nil {
-// 		return &student, err
-// 	}
-// 	return &student, nil
-// }
+func (repo *StudentRepositry) GetByID(id uint) (*models.Student, error) {
+	var student models.Student
+	if err := repo.db.Where("id = ?", id).First(&student).Error; err != nil {
+		return &student, err
+	}
+	return &student, nil
+}
 
 func (repo *StudentRepositry) All() ([]models.Student, error) {
 	var students []models.Student
@@ -60,8 +60,17 @@ func (repo *StudentRepositry) All() ([]models.Student, error) {
 	return students, nil
 }
 
-func (repo *StudentRepositry) GetByID(id uint) ([]models.Student, error) {
+func (repo *StudentRepositry) GetStudentByID(id uint) ([]models.Student, error) {
 	var student []models.Student
-	err := repo.db.Model(&models.Certificate{}).Preload("Certificate").Where("id = ?", id).Find(&student).Error
+	err := repo.db.Model(&models.Student{}).Preload("Certificate").Find(&student).Error
 	return student, err
+}
+
+func (repo *StudentRepositry) GetAll(id uint) (*models.Student, error) {
+	var student models.Student
+	if err := repo.db.Preload("Certificates").First(&student, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &student, nil
 }

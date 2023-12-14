@@ -20,7 +20,9 @@ func Dashboard(c *fiber.Ctx) error {
 
 	if role == "student" {
 		studentRepo := repository.NewStudentRepository(storage.GetDB())
-		student, err := studentRepo.GetByID(id)
+		student, err := studentRepo.GetAll(id)
+
+		log.Println(student)
 
 		if err != nil {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
@@ -30,7 +32,7 @@ func Dashboard(c *fiber.Ctx) error {
 	} else if role == "faculty" {
 
 		facultyRepo := repository.NewFacultyRepository(storage.GetDB())
-		faculty, err := facultyRepo.GetByID(id)
+		faculty, err := facultyRepo.GetAll(id)
 
 		if err != nil {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
