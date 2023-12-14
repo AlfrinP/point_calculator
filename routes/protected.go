@@ -15,4 +15,5 @@ func SetupProtectedRoutes(app *fiber.App) {
 	api.Post("/certificate", controllers.PostCertificate)
 	api.Get("/certificate", controllers.GetAllCertificate)
 	api.Post("/comment", controllers.PostComment)
+	api.Get("/logout", controllers.LogoutUser)
 }
