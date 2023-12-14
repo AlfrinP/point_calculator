@@ -22,6 +22,8 @@ func Dashboard(c *fiber.Ctx) error {
 		studentRepo := repository.NewStudentRepository(storage.GetDB())
 		student, err := studentRepo.GetByID(id)
 
+		log.Println(student)
+
 		if err != nil {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
 		}

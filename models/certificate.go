@@ -20,7 +20,7 @@ type Certificate struct {
 type CertificateCreate struct {
 	Name     string `validate:"required" json:"name"`
 	Category string `validate:"required" json:"category"`
-	Level    string `validate:"required" json:"level"`
+	Level    string `validate:"required" json:"category"`
 	Date     string `validate:"required" json:"date"`
 }
 
